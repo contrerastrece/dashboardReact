@@ -15,11 +15,7 @@ import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import CardContent from '@mui/material/CardContent'
 import { DataGrid } from '@mui/x-data-grid'
-import Select from '@mui/material/Select'
 
 // ** Icon Imports
 import Icon from '../../@core/components/icon'
@@ -42,24 +38,12 @@ import { fetchData, deleteUser } from '../../store/apps/user'
 import axios from 'axios'
 
 // ** Custom Table Components Imports
-import TableHeader from '../../views/apps/user/list/TableHeader'
-import AddUserDrawer from '../../views/apps/user/list/AddUserProductos'
+import TableHeader from '../../views/apps/tablas/categorias/TableHeader'
+import AddCategoria from '../../views/apps/tablas/categorias/AddCategorias'
 import { useCategoriesStore } from 'src/store/apps/categories'
 
-// ** Vars
-const userRoleObj = {
-  admin: { icon: 'mdi:laptop', color: 'error.main' },
-  author: { icon: 'mdi:cog-outline', color: 'warning.main' },
-  editor: { icon: 'mdi:pencil-outline', color: 'info.main' },
-  maintainer: { icon: 'mdi:chart-donut', color: 'success.main' },
-  subscriber: { icon: 'mdi:account-outline', color: 'primary.main' }
-}
 
-const userStatusObj = {
-  active: 'success',
-  pending: 'warning',
-  inactive: 'secondary'
-}
+
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   fontWeight: 600,
@@ -73,22 +57,22 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 }))
 
 // ** renders client column
-const renderClient = row => {
-  if (row.avatar.length) {
-    return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
-  } else {
-    return (
-      <CustomAvatar
-        skin='light'
-        color={row.avatarColor || 'primary'}
-        sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
-      >
-        {getInitials(row.fullName ? row.fullName : 'John Doe')}
-      </CustomAvatar>
-    )
-  }
-}
-
+// const renderClient = row => {
+//   if (row.avatar.length) {
+//     return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
+//   } else {
+//     return (
+//       <CustomAvatar
+//         skin='light'
+//         color={row.avatarColor || 'primary'}
+//         sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
+//       >
+//         {getInitials(row.fullName ? row.fullName : 'John Doe')}
+//       </CustomAvatar>
+//     )
+//   }
+// }
+// 
 const RowOptions = ({ id }) => {
   // ** Hooks
   const dispatch = useDispatch()
@@ -130,15 +114,7 @@ const RowOptions = ({ id }) => {
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        <MenuItem
-          component={Link}
-          sx={{ '& svg': { mr: 2 } }}
-          onClick={handleRowOptionsClose}
-          href='/apps/user/view/overview/'
-        >
-          <Icon icon='mdi:eye-outline' fontSize={20} />
-          View
-        </MenuItem>
+       
         <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
@@ -155,21 +131,16 @@ const RowOptions = ({ id }) => {
 const columns = [
   {
     flex: 0.2,
-    minWidth: 230,
-    field: 'fullName',
-    headerName: 'User',
+    minWidth: 30,
+    field: 'id',
+    headerName: 'Id',
     renderCell: ({ row }) => {
-      const { fullName, username } = row
 
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(row)}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{fullName}</LinkStyled>
-            <Typography noWrap variant='caption'>
-              {`@${username}`}
+            <Typography noWrap variant='body2'>
+              {row.id}
             </Typography>
-          </Box>
         </Box>
       )
     }
@@ -177,59 +148,29 @@ const columns = [
   {
     flex: 0.2,
     minWidth: 250,
-    field: 'email',
-    headerName: 'Email',
+    field: 'description',
+    headerName: 'Descripción',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.email}
+          {row.description}
         </Typography>
       )
     }
   },
   {
-    flex: 0.15,
-    field: 'role',
-    minWidth: 150,
-    headerName: 'Role',
+    flex: 0.2,
+    minWidth: 30,
+    field: 'fecha',
+    headerName: 'Fecha de Creacion',
     renderCell: ({ row }) => {
+
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3, color: userRoleObj[row.role].color } }}>
-          <Icon icon={userRoleObj[row.role].icon} fontSize={20} />
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.role}
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography noWrap variant='body2'>
+              {(new Date(row.created_at)).toISOString().split('T')[0]}
+            </Typography>
         </Box>
-      )
-    }
-  },
-  {
-    flex: 0.15,
-    minWidth: 120,
-    headerName: 'Plan',
-    field: 'currentPlan',
-    renderCell: ({ row }) => {
-      return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.currentPlan}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 0.1,
-    minWidth: 110,
-    field: 'status',
-    headerName: 'Status',
-    renderCell: ({ row }) => {
-      return (
-        <CustomChip
-          skin='light'
-          size='small'
-          label={row.status}
-          color={userStatusObj[row.status]}
-          sx={{ textTransform: 'capitalize', '& .MuiChip-label': { lineHeight: '18px' } }}
-        />
       )
     }
   },
@@ -271,17 +212,6 @@ const Ventas = ({ apiData }) => {
     setValue(val)
   }, [])
 
-  const handleRoleChange = useCallback(e => {
-    setRole(e.target.value)
-  }, [])
-
-  const handlePlanChange = useCallback(e => {
-    setPlan(e.target.value)
-  }, [])
-
-  const handleStatusChange = useCallback(e => {
-    setStatus(e.target.value)
-  }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 
   const dataCategories=useCategoriesStore(state=>state.dataCategories);
@@ -290,21 +220,10 @@ const Ventas = ({ apiData }) => {
 useEffect(() => {
   showCategories();
 }, []);
+console.log(store)
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12}>
-        {apiData && (
-          <Grid container spacing={6}>
-            {apiData.statsHorizontal.map((item, index) => {
-              return (
-                <Grid item xs={12} md={3} sm={6} key={index}>
-                  <CardStatisticsHorizontal {...item} icon={<Icon icon={item.icon} />} />
-                </Grid>
-              )
-            })}
-          </Grid>
-        )}
-      </Grid>
+     
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Lista de Categorias' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
@@ -313,7 +232,7 @@ useEffect(() => {
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <DataGrid
             autoHeight
-            rows={store.data}
+            rows={dataCategories}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick
@@ -325,18 +244,9 @@ useEffect(() => {
         </Card>
       </Grid>
 
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <AddCategoria open={addUserOpen} toggle={toggleAddUserDrawer} />
     </Grid>
   )
 }
-export const getStaticProps = async () => {
-  const res = await axios.get('/cards/statistics')
-  const apiData = res.data
 
-  return {
-    props: {
-      apiData
-    }
-  }
-}
 export default Ventas
