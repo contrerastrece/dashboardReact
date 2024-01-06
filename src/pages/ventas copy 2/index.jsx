@@ -43,7 +43,7 @@ import axios from 'axios'
 
 // ** Custom Table Components Imports
 import TableHeader from '../../views/apps/user/list/TableHeader'
-import AddUserDrawer from '../../views/apps/user/list/AddUserDrawer'
+import AddUserDrawer from '../../views/apps/user/list/AddUserProductos'
 
 // ** Vars
 const userRoleObj = {

@@ -25,12 +25,12 @@ const TableHeader = props => {
           size='small'
           value={value}
           sx={{ mr: 6, mb: 2 }}
-          placeholder='Search User'
+          placeholder='Buscar Productos'
           onChange={e => handleFilter(e.target.value)}
         />
 
         <Button sx={{ mb: 2 }} onClick={toggle} variant='contained'>
-          Add User
+          Agregar Producto
         </Button>
       </Box>
     </Box>
