@@ -38,7 +38,16 @@ export const Mostrar_categorias = async (p) => {
       console.error("Mostrar_categorias:", error);
       throw new Error("Error al obtener datos de categorias");
     }
-    return data;
+    
+    const searchTerm=p.q.toLowerCase().trim();
+    
+    const filtered=data.filter(c=>(
+      c.description.toLowerCase().includes(searchTerm)
+    ))
+    return filtered;
+
+  
+    
     // if (data) {
     //   console.log(data, "👀");
     //   return data;

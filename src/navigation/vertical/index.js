@@ -26,9 +26,14 @@ const navigation = () => {
       icon: 'mdi:shopping',
     },
     {
-      title: 'Reports',
+      title: 'Reportes',
       path: '/reportes',
       icon: 'mdi:chart-bar',
+    },
+    {
+      title: 'Clientes',
+      path: '/clientes',
+      icon: 'mdi:people',
     },
     {
       path: '/acl',

@@ -38,7 +38,9 @@ import axios from 'axios'
 
 // ** Custom Table Components Imports
 import TableHeader from '../../views/apps/user/list/TableHeader'
-import SidebarAddProductos from '../../views/apps/user/list/AddUserProductos'
+import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
+import { useProductsStore } from 'src/store/apps/products/productsStore'
+import data from 'src/@fake-db/components/data'
 
 // ** Vars
 const userRoleObj = {
@@ -67,21 +69,21 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 }))
 
 // ** renders client column
-const renderClient = row => {
-  if (row.avatar.length) {
-    return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
-  } else {
-    return (
-      <CustomAvatar
-        skin='light'
-        color={row.avatarColor || 'primary'}
-        sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
-      >
-        {getInitials(row.fullName ? row.fullName : 'John Doe')}
-      </CustomAvatar>
-    )
-  }
-}
+// const renderClient = row => {
+//   if (row.avatar.length) {
+//     return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
+//   } else {
+//     return (
+//       <CustomAvatar
+//         skin='light'
+//         color={row.avatarColor || 'primary'}
+//         sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
+//       >
+//         {getInitials(row.fullName ? row.fullName : 'John Doe')}
+//       </CustomAvatar>
+//     )
+//   }
+// }
 
 const RowOptions = ({ id }) => {
   // ** Hooks
@@ -149,87 +151,72 @@ const RowOptions = ({ id }) => {
 const columns = [
   {
     flex: 0.2,
-    minWidth: 230,
-    field: 'fullName',
+    minWidth: 120,
+    field: 'name',
     headerName: 'Nombre',
-    renderCell: ({ row }) => {
-      const { fullName, username } = row
-
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(row)}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <LinkStyled href='/apps/user/view/overview/'>{fullName}</LinkStyled>
-            <Typography noWrap variant='caption'>
-              {`@${username}`}
-            </Typography>
-          </Box>
-        </Box>
-      )
-    }
-  },
-  {
-    flex: 0.2,
-    minWidth: 250,
-    field: 'email',
-    headerName: 'Descripción',
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.email}
+          {row.name}
         </Typography>
       )
     }
   },
   {
-    flex: 0.15,
-    field: 'role',
-    minWidth: 150,
-    headerName: 'Categoria',
+    flex: 0.2,
+    minWidth: 200,
+    field: 'description',
+    headerName: 'Descripción',
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 3, color: userRoleObj[row.role].color } }}>
-          <Icon icon={userRoleObj[row.role].icon} fontSize={20} />
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.role}
-          </Typography>
-        </Box>
+        <Typography noWrap variant='body2'>
+          {row.description}
+        </Typography>
       )
     }
   },
   {
     flex: 0.15,
     minWidth: 120,
-    headerName: 'Precio',
-    field: 'currentPlan',
+    field: 'category',
+    headerName: 'Categoria',
     renderCell: ({ row }) => {
       return (
-        <Typography variant='subtitle1' noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.currentPlan}
+        <Typography noWrap variant='body2'>
+          {row.id_category}
+        </Typography>
+      )
+    }
+  },
+  {
+    flex: 0.15,
+    minWidth: 80,
+    field: 'price',
+    headerName: 'Precio',
+    renderCell: ({ row }) => {
+      return (
+        <Typography variant='body2' noWrap sx={{ textTransform: 'capitalize' }}>
+          S/ {row.price}
         </Typography>
       )
     }
   },
   {
     flex: 0.1,
-    minWidth: 110,
-    field: 'status',
+    minWidth: 80,
+    field: 'stock',
     headerName: 'Stock',
     renderCell: ({ row }) => {
       return (
-        <CustomChip
-          skin='light'
-          size='small'
-          label={row.status}
-          color={userStatusObj[row.status]}
-          sx={{ textTransform: 'capitalize', '& .MuiChip-label': { lineHeight: '18px' } }}
-        />
+        <Typography variant='body2' noWrap sx={{ textTransform: 'capitalize' }}>
+        {row.stock}
+      </Typography>
       )
     }
   },
   {
     flex: 0.1,
-    minWidth: 90,
+    minWidth: 75,
     sortable: false,
     field: 'actions',
     headerName: 'Actions',
@@ -237,47 +224,39 @@ const columns = [
   }
 ]
 
-const Ventas = ({ apiData }) => {
+const Ventas = () => {
   // ** State
-  const [role, setRole] = useState('')
-  const [plan, setPlan] = useState('')
   const [value, setValue] = useState('')
-  const [status, setStatus] = useState('')
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
 
-  // ** Hooks
-  const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
-  console.log(store);
-  useEffect(() => {
-    dispatch(
-      fetchData({
-        role,
-        status,
-        q: value,
-        currentPlan: plan
-      })
-    )
-  }, [dispatch, plan, role, status, value])
 
   const handleFilter = useCallback(val => {
     setValue(val)
   }, [])
 
-  
+  const dataProducts=useProductsStore(state=>state.dataProducts);
+  const showProducts=useProductsStore(state=>state.showProducts);
+
+  useEffect(() => {
+   showProducts({q:value});
+
+  }, [value]);
+  console.log(dataProducts)
+
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Lista de Productos' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
-          
+
           <Divider />
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
           <DataGrid
             autoHeight
-            rows={store.data}
+            rows={dataProducts}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick
@@ -289,18 +268,9 @@ const Ventas = ({ apiData }) => {
         </Card>
       </Grid>
 
-      <SidebarAddProductos open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <SidebarAdd open={addUserOpen} toggle={toggleAddUserDrawer}/>
     </Grid>
   )
 }
-export const getStaticProps = async () => {
-  const res = await axios.get('/cards/statistics')
-  const apiData = res.data
 
-  return {
-    props: {
-      apiData
-    }
-  }
-}
 export default Ventas
