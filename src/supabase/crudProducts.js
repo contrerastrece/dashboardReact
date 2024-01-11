@@ -1,36 +1,38 @@
 import { supabase } from "./client";
 
-// export const Insertar_categorias = async (p) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from("categories")
-//       .insert(p)
-//       .select();
-//     if (error) {
-//       Swal.fire({
-//         icon: "error",
-//         title: "Opps...",
-//         text: "Ya existe un registro con " + p.description,
-//         footer: '<a href="">Agregue una nueva descripcion</a>',
-//       });
-//     }
-//     if (data) {
-//       Swal.fire({
-//         icon: "success",
-//         title: "Categoria Ingresado",
-//         showConfirmButton: false,
-//         timer: 1500,
-//       });
-//     }
-//     return data;
-//   } catch (error) {
-//     alert(error.error_description || error.message + " insertar categoria");
-//   }
-// };
+export const Insertar_productos = async (p) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .insert(p)
+      .select();
+
+    // if (error) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Opps...",
+    //     text: "Ya existe un registro con " + p.description,
+    //     footer: '<a href="">Agregue una nueva descripcion</a>',
+    //   });
+    // }
+    // if (data) {
+    //   Swal.fire({
+    //     icon: "success",
+    //     title: "Categoria Ingresado",
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    // }
+
+    return data;
+  } catch (error) {
+    alert(error.error_description || error.message + " insertar producto");
+  }
+};
 
 export const Mostrar_productos = async (p) => {
   try {
-    
+
     const { data, error } = await supabase
       .from("products")
       .select()
@@ -40,14 +42,15 @@ export const Mostrar_productos = async (p) => {
       throw new Error("Error al obtener datos de productos");
     }
     const searchTerm = p.q.toLowerCase();
-    
+
     // Filtra los productos según el término de búsqueda
     const filteredData = data.filter(producto => (
       producto.name.toLowerCase().includes(searchTerm) ||
       producto.description.toLowerCase().includes(searchTerm)
-    )); 
-   
+    ));
+
     return filteredData;
+
     // if (data) {
     //   console.log(data, "👀");
     //   return data;

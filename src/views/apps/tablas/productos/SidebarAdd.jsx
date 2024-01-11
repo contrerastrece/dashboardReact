@@ -24,7 +24,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
 import { addUser } from 'src/store/apps/user'
@@ -83,10 +83,6 @@ const SidebarAdd = props => {
   const [plan, setPlan] = useState('basic')
   const [role, setRole] = useState('subscriber')
 
-  // ** Hooks
-  const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
-
   const {
     reset,
     control,
@@ -99,6 +95,7 @@ const SidebarAdd = props => {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+  console.log(control)
 
   const onSubmit = data => {
     if (store.allData.some(u => u.email === data.email || u.username === data.username)) {
@@ -115,7 +112,7 @@ const SidebarAdd = props => {
         }
       })
     } else {
-      dispatch(addUser({ ...data, role, currentPlan: plan }))
+      // dispatch(addUser({ ...data, role, currentPlan: plan }))
       toggle()
       reset()
     }
@@ -180,7 +177,7 @@ const SidebarAdd = props => {
             />
             {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
           </FormControl>
-              
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='stock'
@@ -199,6 +196,7 @@ const SidebarAdd = props => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='contact'
@@ -217,6 +215,7 @@ const SidebarAdd = props => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <InputLabel id='role-select'>Categoria</InputLabel>
             <Select
@@ -235,7 +234,7 @@ const SidebarAdd = props => {
               <MenuItem value='subscriber'>Bebida</MenuItem>
             </Select>
           </FormControl>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Agregar

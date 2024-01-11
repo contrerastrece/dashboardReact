@@ -24,7 +24,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
 import { addUser } from 'src/store/apps/user'
@@ -83,9 +83,6 @@ const SidebarAddCategorias = props => {
   const [plan, setPlan] = useState('basic')
   const [role, setRole] = useState('subscriber')
 
-  // ** Hooks
-  const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
 
   const {
     reset,
@@ -115,7 +112,7 @@ const SidebarAddCategorias = props => {
         }
       })
     } else {
-      dispatch(addUser({ ...data, role, currentPlan: plan }))
+      // dispatch(addUser({ ...data, role, currentPlan: plan }))
       toggle()
       reset()
     }
@@ -180,7 +177,7 @@ const SidebarAddCategorias = props => {
             />
             {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
           </FormControl>
-         
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Agregar

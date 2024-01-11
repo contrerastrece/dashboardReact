@@ -17,13 +17,13 @@ import { DataGrid } from '@mui/x-data-grid'
 import Icon from '../../@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
-import { fetchData, deleteUser } from '../../store/apps/user'
+// import { fetchData, deleteUser } from '../../store/apps/user'
 
 // ** Third Party Components
-import axios from 'axios'
+// import axios from 'axios'
 
 // ** Custom Table Components Imports
 import TableHeader from '../../views/apps/tablas/categorias/TableHeader'
@@ -32,7 +32,7 @@ import { useCategoriesStore } from 'src/store/apps/categories'
 
 const RowOptions = ({ id }) => {
   // ** Hooks
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
@@ -47,7 +47,7 @@ const RowOptions = ({ id }) => {
   }
 
   const handleDelete = () => {
-    dispatch(deleteUser(id))
+    // dispatch(deleteUser(id))
     handleRowOptionsClose()
   }
 
@@ -154,9 +154,9 @@ const Ventas = () => {
   const showCategories = useCategoriesStore(state => state.showCategories)
   useEffect(() => {
     showCategories({ q: value })
-  }, [value])
+  }, [value,showCategories])
 
-  console.log(dataCategories)
+  // console.log(dataCategories)
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>

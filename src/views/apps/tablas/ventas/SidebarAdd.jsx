@@ -23,11 +23,6 @@ import { useForm, Controller } from 'react-hook-form'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
-// ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
-
-// ** Actions Imports
-import { addUser } from 'src/store/apps/user'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -75,17 +70,13 @@ const defaultValues = {
   contact: Number('')
 }
 
-const SidebarAddProductos = props => {
+const SidebarAdd = props => {
   // ** Props
   const { open, toggle } = props
 
   // ** State
   const [plan, setPlan] = useState('basic')
   const [role, setRole] = useState('subscriber')
-
-  // ** Hooks
-  const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
 
   const {
     reset,
@@ -99,6 +90,7 @@ const SidebarAddProductos = props => {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
+  console.log(control)
 
   const onSubmit = data => {
     if (store.allData.some(u => u.email === data.email || u.username === data.username)) {
@@ -115,7 +107,7 @@ const SidebarAddProductos = props => {
         }
       })
     } else {
-      dispatch(addUser({ ...data, role, currentPlan: plan }))
+      // dispatch(addUser({ ...data, role, currentPlan: plan }))
       toggle()
       reset()
     }
@@ -180,7 +172,7 @@ const SidebarAddProductos = props => {
             />
             {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
           </FormControl>
-              
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='stock'
@@ -199,6 +191,7 @@ const SidebarAddProductos = props => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='contact'
@@ -217,6 +210,7 @@ const SidebarAddProductos = props => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <InputLabel id='role-select'>Categoria</InputLabel>
             <Select
@@ -235,7 +229,7 @@ const SidebarAddProductos = props => {
               <MenuItem value='subscriber'>Bebida</MenuItem>
             </Select>
           </FormControl>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Agregar
@@ -250,4 +244,4 @@ const SidebarAddProductos = props => {
   )
 }
 
-export default SidebarAddProductos
+export default SidebarAdd

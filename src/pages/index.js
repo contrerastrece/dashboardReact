@@ -1,4 +1,3 @@
-import Compras from "./compras"
 
 const Home = () => {
   return <>

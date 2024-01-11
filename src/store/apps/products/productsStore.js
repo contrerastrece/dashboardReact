@@ -8,6 +8,7 @@ import { create } from "zustand";
 //   Reset_categorias,
 // } from "../../../supabase/crudCategories";
 import { Mostrar_productos } from "src/supabase/crudProducts";
+import { Insertar_productos } from "src/supabase/crudProducts";
 
 export const useProductsStore = create((set, get) => ({
   dataProducts: [],
@@ -19,15 +20,17 @@ export const useProductsStore = create((set, get) => ({
     set({ dataProducts: response });
     set({ categoryItemSelect: response[0] });
 
-    
+
     return response;
   },
-  // insertCategories: async (p) => {
-  //   await Insertar_categorias(p);
-  //   const { showCategories } = get();
-  //   const {parametros}=get()
-  //   set(showCategories(parametros));
-  // },
+
+  insertProducts: async (p) => {
+    await Insertar_productos(p);
+    const { showProducts } = get();
+    const {parametros}=get()
+    set(showProducts(parametros));
+  },
+  
   // deleteCategories: async (p) => {
   //   await Eliminar_categorias(p);
   //   const {parametros}=get();

@@ -25,7 +25,7 @@ import Select from '@mui/material/Select'
 import Icon from '../../@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
 import CustomChip from '../../@core/components/mui/chip'
@@ -90,7 +90,7 @@ const renderClient = row => {
 
 const RowOptions = ({ id }) => {
   // ** Hooks
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
@@ -105,7 +105,7 @@ const RowOptions = ({ id }) => {
   }
 
   const handleDelete = () => {
-    dispatch(deleteUser(id))
+    // dispatch(deleteUser(id))
     handleRowOptionsClose()
   }
 
@@ -252,19 +252,9 @@ const Ventas = ({ apiData }) => {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
 
   // ** Hooks
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const store = useSelector(state => state.user)
-  console.log(store);
-  useEffect(() => {
-    dispatch(
-      fetchData({
-        role,
-        status,
-        q: value,
-        currentPlan: plan
-      })
-    )
-  }, [dispatch, plan, role, status, value])
+
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -282,6 +272,7 @@ const Ventas = ({ apiData }) => {
     setStatus(e.target.value)
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -384,6 +375,7 @@ const Ventas = ({ apiData }) => {
     </Grid>
   )
 }
+
 export const getStaticProps = async () => {
   const res = await axios.get('/cards/statistics')
   const apiData = res.data
@@ -394,4 +386,5 @@ export const getStaticProps = async () => {
     }
   }
 }
+
 export default Ventas

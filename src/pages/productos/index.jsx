@@ -21,7 +21,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import Icon from '../../@core/components/icon'
 
 // ** Store Imports
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
 import CustomChip from '../../@core/components/mui/chip'
@@ -33,61 +33,15 @@ import { getInitials } from '../../@core/utils/get-initials'
 // ** Actions Imports
 import { fetchData, deleteUser } from '../../store/apps/user'
 
-// ** Third Party Components
-import axios from 'axios'
 
 // ** Custom Table Components Imports
-import TableHeader from '../../views/apps/user/list/TableHeader'
+import TableHeader from 'src/views/apps/tablas/productos/TableHeader'
 import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
+
 import { useProductsStore } from 'src/store/apps/products/productsStore'
-import data from 'src/@fake-db/components/data'
 
-// ** Vars
-const userRoleObj = {
-  admin: { icon: 'mdi:laptop', color: 'error.main' },
-  author: { icon: 'mdi:cog-outline', color: 'warning.main' },
-  editor: { icon: 'mdi:pencil-outline', color: 'info.main' },
-  maintainer: { icon: 'mdi:chart-donut', color: 'success.main' },
-  subscriber: { icon: 'mdi:account-outline', color: 'primary.main' }
-}
-
-const userStatusObj = {
-  active: 'success',
-  pending: 'warning',
-  inactive: 'secondary'
-}
-
-const LinkStyled = styled(Link)(({ theme }) => ({
-  fontWeight: 600,
-  fontSize: '1rem',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  color: theme.palette.text.secondary,
-  '&:hover': {
-    color: theme.palette.primary.main
-  }
-}))
-
-// ** renders client column
-// const renderClient = row => {
-//   if (row.avatar.length) {
-//     return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
-//   } else {
-//     return (
-//       <CustomAvatar
-//         skin='light'
-//         color={row.avatarColor || 'primary'}
-//         sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
-//       >
-//         {getInitials(row.fullName ? row.fullName : 'John Doe')}
-//       </CustomAvatar>
-//     )
-//   }
-// }
 
 const RowOptions = ({ id }) => {
-  // ** Hooks
-  const dispatch = useDispatch()
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
@@ -102,7 +56,7 @@ const RowOptions = ({ id }) => {
   }
 
   const handleDelete = () => {
-    dispatch(deleteUser(id))
+    // dispatch(deleteUser(id))
     handleRowOptionsClose()
   }
 
@@ -126,15 +80,6 @@ const RowOptions = ({ id }) => {
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        {/* <MenuItem
-          component={Link}
-          sx={{ '& svg': { mr: 2 } }}
-          onClick={handleRowOptionsClose}
-          href='/apps/user/view/overview/'
-        >
-          <Icon icon='mdi:eye-outline' fontSize={20} />
-          View
-        </MenuItem> */}
         <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
@@ -241,7 +186,7 @@ const Ventas = () => {
   useEffect(() => {
    showProducts({q:value});
 
-  }, [value]);
+  }, [value,showProducts]);
   console.log(dataProducts)
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
