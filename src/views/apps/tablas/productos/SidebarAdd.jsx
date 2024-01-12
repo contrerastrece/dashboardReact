@@ -22,18 +22,18 @@ import { useForm, Controller } from 'react-hook-form'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-
-// ** Store Imports
-// import { useDispatch, useSelector } from 'react-redux'
-
-// ** Actions Imports
-import { addUser } from 'src/store/apps/user'
+import { useCategoriesStore } from 'src/store/apps/categories'
+import { useQuery } from '@tanstack/react-query'
+import { useProductsStore } from 'src/store/apps/products/productsStore'
+import FileUploaderSingle from 'src/components/FileUploader'
+import { Avatar, Grid } from '@mui/material'
+import CardSnippet from 'src/@core/components/card-snippet'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
-    return `${field} field is required`
+    return `El campo ${field} es requerido`
   } else if (valueLen > 0 && valueLen < min) {
-    return `${field} must be at least ${min} characters`
+    return `${field} deberá tener al menos ${min} caracteres`
   } else {
     return ''
   }
@@ -48,46 +48,42 @@ const Header = styled(Box)(({ theme }) => ({
 }))
 
 const schema = yup.object().shape({
-  company: yup.string().required(),
-  country: yup.string().required(),
-  email: yup.string().email().required(),
-  contact: yup
-    .number()
-    .typeError('Contact Number field is required')
-    .min(10, obj => showErrors('Contact Number', obj.value.length, obj.min))
-    .required(),
-  fullName: yup
+  codebar: yup
     .string()
-    .min(3, obj => showErrors('First Name', obj.value.length, obj.min))
+    .min(10, obj => showErrors('Codigo de Barra', obj.value.length, obj.min))
     .required(),
-  username: yup
+  producto: yup
     .string()
-    .min(3, obj => showErrors('Username', obj.value.length, obj.min))
-    .required()
+    .min(3, obj => showErrors('Producto', obj.value.length, obj.min))
+    .required(),
+  descripcion: yup
+    .string()
+    .min(3, obj => showErrors('Descripcion', obj.value.length, obj.min))
+    .required(),
+  cantidad: yup.number().positive('La cantidad debe ser > 0').integer('La cantidad debe ser un nro entero').required(),
+  precio: yup.number().positive('El precio debe ser positivo').required()
 })
 
 const defaultValues = {
-  email: '',
-  company: '',
-  country: '',
-  fullName: '',
-  username: '',
-  contact: Number('')
+  codebar: '',
+  producto: '',
+  descripcion: '',
+  cantidad: Number(1),
+  precio: ''
 }
 
 const SidebarAdd = props => {
   // ** Props
   const { open, toggle } = props
 
-  // ** State
-  const [plan, setPlan] = useState('basic')
-  const [role, setRole] = useState('subscriber')
+  const [categoria, setCategoria] = useState('Categoria')
+  const dataCategories = useCategoriesStore(state => state.dataCategories)
+  const showCategories = useCategoriesStore(state => state.showCategories)
+  const insertProducts = useProductsStore(state => state.insertProducts)
 
   const {
     reset,
     control,
-    setValue,
-    setError,
     handleSubmit,
     formState: { errors }
   } = useForm({
@@ -95,36 +91,33 @@ const SidebarAdd = props => {
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
-  console.log(control)
 
   const onSubmit = data => {
-    if (store.allData.some(u => u.email === data.email || u.username === data.username)) {
-      store.allData.forEach(u => {
-        if (u.email === data.email) {
-          setError('email', {
-            message: 'Email already exists!'
-          })
-        }
-        if (u.username === data.username) {
-          setError('username', {
-            message: 'Username already exists!'
-          })
-        }
-      })
-    } else {
-      // dispatch(addUser({ ...data, role, currentPlan: plan }))
-      toggle()
-      reset()
-    }
-  }
-
-  const handleClose = () => {
-    setPlan('basic')
-    setRole('subscriber')
-    setValue('contact', Number(''))
+    insertProducts({
+      name: data.producto,
+      description: data.descripcion,
+      stock: data.cantidad,
+      price: data.precio,
+      id_category: categoria,
+      bar_code: data.cadebar
+    })
+    setCategoria('Categoria')
     toggle()
     reset()
   }
+
+  const handleClose = () => {
+    setCategoria('Categoria')
+    toggle()
+    reset()
+  }
+
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ['mostrar categorias', dataCategories],
+    queryFn: () => {
+      showCategories({ q: '' })
+    }
+  })
 
   return (
     <Drawer
@@ -143,9 +136,40 @@ const SidebarAdd = props => {
       </Header>
       <Box sx={{ p: 5 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid item xs={12}>
+            <Avatar
+              variant='rounded'
+              sx={{
+                width: '100%',
+                height: 200,
+                backgroundColor: 'transparent',
+                border: `2px dashed`,
+                mb:6
+              }}
+            >
+              <FileUploaderSingle />
+            </Avatar>
+          </Grid>
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
-              name='fullName'
+              name='codebar'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange } }) => (
+                <TextField
+                  value={value}
+                  label='Cod. Barra'
+                  onChange={onChange}
+                  placeholder='Codigo de Barra'
+                  error={Boolean(errors.codebar)}
+                />
+              )}
+            />
+            {errors.barcode && <FormHelperText sx={{ color: 'error.main' }}>{errors.barcode.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 6 }}>
+            <Controller
+              name='producto'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
@@ -158,11 +182,12 @@ const SidebarAdd = props => {
                 />
               )}
             />
-            {errors.fullName && <FormHelperText sx={{ color: 'error.main' }}>{errors.fullName.message}</FormHelperText>}
+            {errors.producto && <FormHelperText sx={{ color: 'error.main' }}>{errors.producto.message}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
-              name='username'
+              name='descripcion'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
@@ -171,16 +196,18 @@ const SidebarAdd = props => {
                   label='Descripcion'
                   onChange={onChange}
                   placeholder='Descripcion del producto'
-                  error={Boolean(errors.username)}
+                  error={Boolean(errors.descripcion)}
                 />
               )}
             />
-            {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
+            {errors.descripcion && (
+              <FormHelperText sx={{ color: 'error.main' }}>{errors.descripcion.message}</FormHelperText>
+            )}
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
-              name='stock'
+              name='cantidad'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
@@ -190,16 +217,16 @@ const SidebarAdd = props => {
                   label='Cantidad #'
                   onChange={onChange}
                   placeholder='123'
-                  error={Boolean(errors.stock)}
+                  error={Boolean(errors.cantidad)}
                 />
               )}
             />
-            {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
+            {errors.cantidad && <FormHelperText sx={{ color: 'error.main' }}>{errors.cantidad.message}</FormHelperText>}
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
-              name='contact'
+              name='precio'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
@@ -208,30 +235,30 @@ const SidebarAdd = props => {
                   value={value}
                   label='Precio S/'
                   onChange={onChange}
-                  placeholder='123'
-                  error={Boolean(errors.contact)}
+                  placeholder='S/ 0.00'
+                  error={Boolean(errors.precio)}
                 />
               )}
             />
-            {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
+            {errors.precio && <FormHelperText sx={{ color: 'error.main' }}>{errors.precio.message}</FormHelperText>}
           </FormControl>
 
           <FormControl fullWidth sx={{ mb: 6 }}>
-            <InputLabel id='role-select'>Categoria</InputLabel>
+            <InputLabel id='categoria-select'>Categoria</InputLabel>
             <Select
               fullWidth
-              value={role}
-              id='select-role'
+              value={categoria}
+              id='select-categoria'
               label='Seleciona Categoria'
-              labelId='role-select'
-              onChange={e => setRole(e.target.value)}
+              labelId='categoria-select'
+              onChange={e => setCategoria(e.target.value)}
               inputProps={{ placeholder: 'Seleciona Categoria' }}
             >
-              <MenuItem value='admin'>Abarrote</MenuItem>
-              <MenuItem value='author'>Lacteo</MenuItem>
-              <MenuItem value='editor'>Verdura</MenuItem>
-              <MenuItem value='maintainer'>Golosina</MenuItem>
-              <MenuItem value='subscriber'>Bebida</MenuItem>
+              {dataCategories.map(c => (
+                <MenuItem value={c.id} key={c.id}>
+                  {c.description}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 

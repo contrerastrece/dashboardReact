@@ -20,19 +20,6 @@ import { DataGrid } from '@mui/x-data-grid'
 // ** Icon Imports
 import Icon from '../../@core/components/icon'
 
-// ** Store Imports
-// import { useDispatch, useSelector } from 'react-redux'
-
-// ** Custom Components Imports
-import CustomChip from '../../@core/components/mui/chip'
-import CustomAvatar from '../../@core/components/mui/avatar'
-
-// ** Utils Import
-import { getInitials } from '../../@core/utils/get-initials'
-
-// ** Actions Imports
-import { fetchData, deleteUser } from '../../store/apps/user'
-
 
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/tablas/productos/TableHeader'
@@ -102,7 +89,7 @@ const columns = [
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.name}
+          {row.product}
         </Typography>
       )
     }
@@ -128,7 +115,7 @@ const columns = [
     renderCell: ({ row }) => {
       return (
         <Typography noWrap variant='body2'>
-          {row.id_category}
+          {row.category}
         </Typography>
       )
     }
