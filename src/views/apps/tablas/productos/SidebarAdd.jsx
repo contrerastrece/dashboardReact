@@ -114,10 +114,11 @@ const SidebarAdd = props => {
 
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['mostrar categorias', dataCategories],
-    queryFn: () => {
-      showCategories({ q: '' })
+    queryFn:() => {
+     return showCategories({ q: '' });
     }
   })
+  console.log(data)
 
   return (
     <Drawer

@@ -20,19 +20,21 @@ import { DataGrid } from '@mui/x-data-grid'
 // ** Icon Imports
 import Icon from '../../@core/components/icon'
 
-
 // ** Custom Table Components Imports
 import TableHeader from 'src/views/apps/tablas/productos/TableHeader'
 import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
 
 import { useProductsStore } from 'src/store/apps/products/productsStore'
-
+import { useQuery } from '@tanstack/react-query'
+import {  CircularProgress } from '@mui/material'
 
 const RowOptions = ({ id }) => {
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
+
+  const deleteProduct=useProductsStore(state=>state.deleteProduct);
 
   const handleRowOptionsClick = event => {
     setAnchorEl(event.currentTarget)
@@ -44,6 +46,9 @@ const RowOptions = ({ id }) => {
 
   const handleDelete = () => {
     // dispatch(deleteUser(id))
+  //  alert(id)
+
+    deleteProduct(id)
     handleRowOptionsClose()
   }
 
@@ -141,8 +146,8 @@ const columns = [
     renderCell: ({ row }) => {
       return (
         <Typography variant='body2' noWrap sx={{ textTransform: 'capitalize' }}>
-        {row.stock}
-      </Typography>
+          {row.stock}
+        </Typography>
       )
     }
   },
@@ -162,20 +167,17 @@ const Ventas = () => {
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
 
-
   const handleFilter = useCallback(val => {
     setValue(val)
   }, [])
 
-  const dataProducts=useProductsStore(state=>state.dataProducts);
-  const showProducts=useProductsStore(state=>state.showProducts);
+  // const dataProducts = useProductsStore(state => state.dataProducts)
+  const showProducts = useProductsStore(state => state.showProducts)
 
-  useEffect(() => {
-   showProducts({q:value});
-
-  }, [value,showProducts]);
-  console.log(dataProducts)
-
+  const { isLoading, data } = useQuery({
+    queryKey: ['productsFilltered', value],
+    queryFn: async () => await showProducts({ q: value })
+  })
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 
   return (
@@ -186,21 +188,28 @@ const Ventas = () => {
 
           <Divider />
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
-          <DataGrid
-            autoHeight
-            rows={dataProducts}
-            columns={columns}
-            checkboxSelection
-            disableRowSelectionOnClick
-            pageSizeOptions={[10, 25, 50]}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            sx={{ '& .MuiDataGrid-columnHeaders': { borderRadius: 0 } }}
-          />
+
+          {isLoading ? (
+            <Box sx={{ display: 'flex', textAlign: 'center', alignItems: 'center', flexDirection: 'column' }}>
+              <CircularProgress sx={{ margin: '1.5rem' }} />
+            </Box>
+          ) : (
+            <DataGrid
+              autoHeight
+              rows={data}
+              columns={columns}
+              checkboxSelection
+              disableRowSelectionOnClick
+              pageSizeOptions={[10, 25, 50]}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              sx={{ '& .MuiDataGrid-columnHeaders': { borderRadius: 0 } }}
+            />
+          )}
         </Card>
       </Grid>
 
-      <SidebarAdd open={addUserOpen} toggle={toggleAddUserDrawer}/>
+      <SidebarAdd open={addUserOpen} toggle={toggleAddUserDrawer} />
     </Grid>
   )
 }

@@ -61,25 +61,25 @@ export const Mostrar_productos = async (p) => {
   }
 };
 
-// export const Eliminar_categorias = async (p) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from("categories")
-//       .delete()
-//       .eq("id_user", p.id_user)
-//       .eq("id", p.id);
-//     if (error) {
-//       alert("Error al eliminar", error.message);
-//     } else {
-//       console.log("Eliminado con exito", "✔");
-//     }
-//   } catch (error) {
-//     console.error("Eliminar Categorias:", error);
-//     throw new Error(
-//       error.error_description || error.message || "Error al mostrar usuarios"
-//     );
-//   }
-// };
+export const Eliminar_productos = async (p) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", p);
+    if (error) {
+      alert("Error al eliminar", error.message);
+    } else {
+      console.log("Eliminado con exito", "✔");
+      alert("✔ Eliminado con exito")
+    }
+  } catch (error) {
+    console.error("Eliminar Producto:", error.message);
+    throw new Error(
+      error.error_description || error.message || "Error al mostrar usuarios"
+    );
+  }
+};
 
 // export const Editar_categorias = async (p) => {
 //   try {
