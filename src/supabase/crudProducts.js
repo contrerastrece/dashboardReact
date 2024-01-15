@@ -8,7 +8,7 @@ export const Insertar_productos = async (p) => {
       .select();
 
       if(error){
-        alert('No se ingresó',error)
+        alert('No se ingresó',error.message)
       }
 
     // if (error) {
@@ -36,16 +36,12 @@ export const Insertar_productos = async (p) => {
 
 export const Mostrar_productos = async (p) => {
   try {
-
-
     const { data, error} = await supabase
       .from("vista_productos_con_categorias")
       .select()
       .order("id", { ascending: false })
 
-
     const searchTerm = p.q.toLowerCase();
-    console.log(data)
 
     // Filtra los productos según el término de búsqueda
     const filteredData = data.filter(producto => (
@@ -56,7 +52,8 @@ export const Mostrar_productos = async (p) => {
     return filteredData;
 
   } catch (error) {
-    // console.error("MostrarUsuarios:", error);
+    console.error("MostrarUsuarios:", error);
+
     // throw new Error(error.error_description || error.message || "Error al mostrar usuarios");
   }
 };

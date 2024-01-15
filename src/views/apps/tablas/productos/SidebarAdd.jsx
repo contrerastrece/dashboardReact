@@ -23,11 +23,10 @@ import { useForm, Controller } from 'react-hook-form'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { useCategoriesStore } from 'src/store/apps/categories'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useProductsStore } from 'src/store/apps/products/productsStore'
 import FileUploaderSingle from 'src/components/FileUploader'
 import { Avatar, Grid } from '@mui/material'
-import CardSnippet from 'src/@core/components/card-snippet'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -77,7 +76,6 @@ const SidebarAdd = props => {
   const { open, toggle } = props
 
   const [categoria, setCategoria] = useState('Categoria')
-  const dataCategories = useCategoriesStore(state => state.dataCategories)
   const showCategories = useCategoriesStore(state => state.showCategories)
   const insertProducts = useProductsStore(state => state.insertProducts)
 
@@ -92,18 +90,36 @@ const SidebarAdd = props => {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = data => {
-    insertProducts({
+
+  const { isLoading, data } = useQuery({
+    queryKey: ['showCategories'],
+    queryFn: () => showCategories({ q: '' })
+  })
+
+  const queryClient=useQueryClient();
+
+  const insertProductMutation = useMutation({
+    mutationFn: insertProducts,
+    onSuccess: () => {
+      queryClient.invalidateQueries('showProducts')
+    },
+
+
+  })
+
+  const onSubmit = (data) => {
+    insertProductMutation.mutate({
       name: data.producto,
       description: data.descripcion,
       stock: data.cantidad,
       price: data.precio,
       id_category: categoria,
-      bar_code: data.cadebar
-    })
+      bar_code: data.codebar
+    });
     setCategoria('Categoria')
     toggle()
     reset()
+    console.log(data)
   }
 
   const handleClose = () => {
@@ -112,13 +128,8 @@ const SidebarAdd = props => {
     reset()
   }
 
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ['mostrar categorias', dataCategories],
-    queryFn:() => {
-     return showCategories({ q: '' });
-    }
-  })
-  console.log(data)
+
+
 
   return (
     <Drawer
@@ -145,7 +156,7 @@ const SidebarAdd = props => {
                 height: 200,
                 backgroundColor: 'transparent',
                 border: `2px dashed`,
-                mb:6
+                mb: 6
               }}
             >
               <FileUploaderSingle />
@@ -166,7 +177,7 @@ const SidebarAdd = props => {
                 />
               )}
             />
-            {errors.barcode && <FormHelperText sx={{ color: 'error.main' }}>{errors.barcode.message}</FormHelperText>}
+            {errors.codebar && <FormHelperText sx={{ color: 'error.main' }}>{errors.codebar.message}</FormHelperText>}
           </FormControl>
           <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
@@ -255,7 +266,7 @@ const SidebarAdd = props => {
               onChange={e => setCategoria(e.target.value)}
               inputProps={{ placeholder: 'Seleciona Categoria' }}
             >
-              {dataCategories.map(c => (
+              {data?.map(c => (
                 <MenuItem value={c.id} key={c.id}>
                   {c.description}
                 </MenuItem>

@@ -25,7 +25,7 @@ import TableHeader from 'src/views/apps/tablas/productos/TableHeader'
 import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
 
 import { useProductsStore } from 'src/store/apps/products/productsStore'
-import { useQuery } from '@tanstack/react-query'
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {  CircularProgress } from '@mui/material'
 
 const RowOptions = ({ id }) => {
@@ -36,6 +36,7 @@ const RowOptions = ({ id }) => {
 
   const deleteProduct=useProductsStore(state=>state.deleteProduct);
 
+
   const handleRowOptionsClick = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -44,13 +45,23 @@ const RowOptions = ({ id }) => {
     setAnchorEl(null)
   }
 
-  const handleDelete = () => {
-    // dispatch(deleteUser(id))
-  //  alert(id)
+const queryClient=useQueryClient();
 
-    deleteProduct(id)
+const deleteProductMutation=useMutation({
+  mutationFn:deleteProduct,
+  onSuccess:()=>{
+    console.log("Producto Eliminado")
+    queryClient.invalidateQueries('showProducts')
+  }
+})
+
+  const handleDelete =  () => {
+    deleteProductMutation.mutate(id);
     handleRowOptionsClose()
   }
+
+
+
 
   return (
     <>
@@ -161,6 +172,7 @@ const columns = [
   }
 ]
 
+
 const Ventas = () => {
   // ** State
   const [value, setValue] = useState('')
@@ -171,12 +183,11 @@ const Ventas = () => {
     setValue(val)
   }, [])
 
-  // const dataProducts = useProductsStore(state => state.dataProducts)
   const showProducts = useProductsStore(state => state.showProducts)
 
   const { isLoading, data } = useQuery({
-    queryKey: ['productsFilltered', value],
-    queryFn: async () => await showProducts({ q: value })
+    queryKey: ['showProducts'],
+    queryFn: () => showProducts({ q: value })
   })
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 

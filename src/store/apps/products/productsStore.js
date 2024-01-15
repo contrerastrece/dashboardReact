@@ -6,8 +6,8 @@ export const useProductsStore = create((set, get) => ({
   parametros: {},
   showProducts: async (p) => {
     const response = await Mostrar_productos(p);
-    set({ parametros: p });
-    set({ dataProducts: response });
+     set({ dataProducts: response });
+     set({ parametros: p });
 
     return response;
   },
@@ -15,16 +15,19 @@ export const useProductsStore = create((set, get) => ({
   insertProducts: async (p) => {
     await Insertar_productos(p);
     const { showProducts } = get();
+
     const {parametros}=get();
-    set(showProducts(parametros));
+     set(showProducts(parametros));
+     
   },
 
   deleteProduct: async (p) => {
     await Eliminar_productos(p);
-    const {parametros}=get();
     const { showProducts } = get();
-    set(showProducts(parametros));
+    const {parametros}=get();
+     set(showProducts(parametros));
   },
+
 
   // resetCategories: async (p) => {
   //   await Reset_categorias(p);
