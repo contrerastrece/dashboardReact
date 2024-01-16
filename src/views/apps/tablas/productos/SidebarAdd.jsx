@@ -90,7 +90,6 @@ const SidebarAdd = props => {
     resolver: yupResolver(schema)
   })
 
-
   const { isLoading, data } = useQuery({
     queryKey: ['showCategories'],
     queryFn: () => showCategories({ q: '' })
@@ -103,7 +102,6 @@ const SidebarAdd = props => {
     onSuccess: () => {
       queryClient.invalidateQueries('showProducts')
     },
-
 
   })
 
@@ -119,7 +117,6 @@ const SidebarAdd = props => {
     setCategoria('Categoria')
     toggle()
     reset()
-    console.log(data)
   }
 
   const handleClose = () => {
@@ -127,9 +124,6 @@ const SidebarAdd = props => {
     toggle()
     reset()
   }
-
-
-
 
   return (
     <Drawer

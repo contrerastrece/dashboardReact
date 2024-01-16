@@ -18,7 +18,7 @@ export const useProductsStore = create((set, get) => ({
 
     const {parametros}=get();
      set(showProducts(parametros));
-     
+
   },
 
   deleteProduct: async (p) => {

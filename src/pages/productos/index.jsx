@@ -61,8 +61,6 @@ const deleteProductMutation=useMutation({
   }
 
 
-
-
   return (
     <>
       <IconButton size='small' onClick={handleRowOptionsClick}>
@@ -185,10 +183,11 @@ const Ventas = () => {
 
   const showProducts = useProductsStore(state => state.showProducts)
 
-  const { isLoading, data } = useQuery({
-    queryKey: ['showProducts'],
+  const { isLoading, data,isError } = useQuery({
+    queryKey: ['showProducts',value],
     queryFn: () => showProducts({ q: value })
   })
+
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 
   return (

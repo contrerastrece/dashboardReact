@@ -36,25 +36,24 @@ export const Insertar_productos = async (p) => {
 
 export const Mostrar_productos = async (p) => {
   try {
+    const searchTerm = p.q.toLowerCase();
+
     const { data, error} = await supabase
       .from("vista_productos_con_categorias")
       .select()
+      .textSearch(['product', 'category'], { query: searchTerm })
       .order("id", { ascending: false })
 
-    const searchTerm = p.q.toLowerCase();
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    // Filtra los productos según el término de búsqueda
-    const filteredData = data.filter(producto => (
-      producto.product.toLowerCase().includes(searchTerm) ||
-      producto.category.toLowerCase().includes(searchTerm)
-    ));
-
-    return filteredData;
+    return data;
 
   } catch (error) {
-    console.error("MostrarUsuarios:", error);
+    console.error("Mostroar_productos:", error);
 
-    // throw new Error(error.error_description || error.message || "Error al mostrar usuarios");
+    throw new Error(error.error_description || error.message || "Error al mostrar Prodcutos");
   }
 };
 
