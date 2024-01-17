@@ -1,15 +1,12 @@
-import { supabase } from "./client";
+import { supabase } from './client'
 
-export const Insertar_productos = async (p) => {
+export const Insertar_productos = async p => {
   try {
-    const { data, error } = await supabase
-      .from("products")
-      .insert(p)
-      .select();
+    const { data, error } = await supabase.from('products').insert(p).select()
 
-      if(error){
-        alert('No se ingresó',error.message)
-      }
+    if (error) {
+      alert('No se ingresó', error.message)
+    }
 
     // if (error) {
     //   Swal.fire({
@@ -28,54 +25,49 @@ export const Insertar_productos = async (p) => {
     //   });
     // }
 
-    return data;
+    return data
   } catch (error) {
-    alert(error.error_description || error.message + " insertar producto");
+    alert(error.error_description || error.message + ' insertar producto')
   }
-};
+}
 
-export const Mostrar_productos = async (p) => {
+export const Mostrar_productos = async p => {
   try {
-    const searchTerm = p.q.toLowerCase();
+    const searchTerm = p.q ? p.q.toLowerCase().trim() : ''
 
-    const { data, error} = await supabase
-      .from("vista_productos_con_categorias")
-      .select()
-      .textSearch(['product', 'category'], { query: searchTerm })
-      .order("id", { ascending: false })
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-    return data;
-
-  } catch (error) {
-    console.error("Mostroar_productos:", error);
-
-    throw new Error(error.error_description || error.message || "Error al mostrar Prodcutos");
-  }
-};
-
-export const Eliminar_productos = async (p) => {
-  try {
     const { data, error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", p);
+      .from('vista_productos_con_categorias')
+      .select()
+      .filter('product', 'ilike', `%${searchTerm}%`)
+      .order('id', { ascending: false })
+
     if (error) {
-      alert("Error al eliminar", error.message);
+      console.log(error, '🙄')
+      throw new Error(error.message)
+    }
+
+    return data
+  } catch (error) {
+    console.error('Mostrar_productos:', error)
+
+    throw new Error(error.error_description || error.message || 'Error al mostrar Prodcutos')
+  }
+}
+
+export const Eliminar_productos = async p => {
+  try {
+    const { data, error } = await supabase.from('products').delete().eq('id', p)
+    if (error) {
+      alert('Error al eliminar', error.message)
     } else {
-      console.log("Eliminado con exito", "✔");
-      alert("✔ Eliminado con exito")
+      console.log('Eliminado con exito', '✔')
+      alert('✔ Eliminado con exito')
     }
   } catch (error) {
-    console.error("Eliminar Producto:", error.message);
-    throw new Error(
-      error.error_description || error.message || "Error al mostrar usuarios"
-    );
+    console.error('Eliminar Producto:', error.message)
+    throw new Error(error.error_description || error.message || 'Error al mostrar usuarios')
   }
-};
+}
 
 // export const Editar_categorias = async (p) => {
 //   try {

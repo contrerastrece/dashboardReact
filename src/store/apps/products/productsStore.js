@@ -28,14 +28,6 @@ export const useProductsStore = create((set, get) => ({
      set(showProducts(parametros));
   },
 
-
-  // resetCategories: async (p) => {
-  //   await Reset_categorias(p);
-  //   const {parametros}=get();
-  //   const { showCategories } = get();
-  //   set(showCategories(parametros));
-  // },
-
   // updateCategories: async (p) => {
   //   await Editar_categorias(p);
   //   const { showCategories } = get();

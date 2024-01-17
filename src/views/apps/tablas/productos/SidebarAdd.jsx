@@ -27,6 +27,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useProductsStore } from 'src/store/apps/products/productsStore'
 import FileUploaderSingle from 'src/components/FileUploader'
 import { Avatar, Grid } from '@mui/material'
+import { supabase } from 'src/supabase/client'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -76,6 +77,9 @@ const SidebarAdd = props => {
   const { open, toggle } = props
 
   const [categoria, setCategoria] = useState('Categoria')
+
+  // ** State
+  const [files, setFiles] = useState([])
   const showCategories = useCategoriesStore(state => state.showCategories)
   const insertProducts = useProductsStore(state => state.insertProducts)
 
@@ -95,17 +99,25 @@ const SidebarAdd = props => {
     queryFn: () => showCategories({ q: '' })
   })
 
-  const queryClient=useQueryClient();
+  const queryClient = useQueryClient()
 
   const insertProductMutation = useMutation({
     mutationFn: insertProducts,
     onSuccess: () => {
       queryClient.invalidateQueries('showProducts')
-    },
-
+    }
   })
 
-  const onSubmit = (data) => {
+  const upLoadImage = async file => {
+    console.log(file[0])
+    const { error } = await supabase.storage.from('images').upload(`${file[0].path}`, file[0])
+
+    if (error) {
+      console.log('Error Upload Image', error)
+    }
+  }
+
+  const onSubmit = data => {
     insertProductMutation.mutate({
       name: data.producto,
       description: data.descripcion,
@@ -113,8 +125,9 @@ const SidebarAdd = props => {
       price: data.precio,
       id_category: categoria,
       bar_code: data.codebar
-    });
+    })
     setCategoria('Categoria')
+    upLoadImage(files)
     toggle()
     reset()
   }
@@ -153,7 +166,7 @@ const SidebarAdd = props => {
                 mb: 6
               }}
             >
-              <FileUploaderSingle />
+              <FileUploaderSingle setFiles={setFiles} files={files} />
             </Avatar>
           </Grid>
           <FormControl fullWidth sx={{ mb: 6 }}>

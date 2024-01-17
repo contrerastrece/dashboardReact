@@ -1,8 +1,5 @@
 // ** React Imports
-import { useState, useEffect, useCallback } from 'react'
-
-// ** Next Imports
-import Link from 'next/link'
+import { useState, useCallback } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -25,7 +22,7 @@ import TableHeader from 'src/views/apps/tablas/productos/TableHeader'
 import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
 
 import { useProductsStore } from 'src/store/apps/products/productsStore'
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {  CircularProgress } from '@mui/material'
 
 const RowOptions = ({ id }) => {
@@ -184,8 +181,8 @@ const Ventas = () => {
   const showProducts = useProductsStore(state => state.showProducts)
 
   const { isLoading, data,isError } = useQuery({
-    queryKey: ['showProducts',value],
-    queryFn: () => showProducts({ q: value })
+    queryKey: ['showProducts',{q:value}],
+    queryFn:  () =>showProducts({ q: value }),
   })
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
