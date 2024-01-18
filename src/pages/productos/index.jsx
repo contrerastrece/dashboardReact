@@ -24,8 +24,9 @@ import SidebarAdd from 'src/views/apps/tablas/productos/SidebarAdd'
 import { useProductsStore } from 'src/store/apps/products/productsStore'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {  CircularProgress } from '@mui/material'
+import Sidebar from 'src/@core/components/sidebar'
 
-const RowOptions = ({ id }) => {
+const RowOptions = ({ id}) => {
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
@@ -57,6 +58,11 @@ const deleteProductMutation=useMutation({
     handleRowOptionsClose()
   }
 
+  const handleEdit=()=>{
+    handleRowOptionsClose()
+
+  }
+
 
   return (
     <>
@@ -78,7 +84,7 @@ const deleteProductMutation=useMutation({
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
-        <MenuItem onClick={handleRowOptionsClose} sx={{ '& svg': { mr: 2 } }}>
+        <MenuItem onClick={handleEdit} sx={{ '& svg': { mr: 2 } }}>
           <Icon icon='mdi:pencil-outline' fontSize={20} />
           Edit
         </MenuItem>
@@ -163,16 +169,20 @@ const columns = [
     sortable: false,
     field: 'actions',
     headerName: 'Actions',
-    renderCell: ({ row }) => <RowOptions id={row.id} />
+    renderCell: ({ row }) => <RowOptions id={row.id}/>
   }
 ]
 
 
 const Ventas = () => {
   // ** State
+  const [type, setType] = useState('');
   const [value, setValue] = useState('')
+  const [toggle, setToggle] = useState(false)
   const [addUserOpen, setAddUserOpen] = useState(false)
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
+
+  console.log(type)
 
   const handleFilter = useCallback(val => {
     setValue(val)
@@ -194,7 +204,7 @@ const Ventas = () => {
           <CardHeader title='Lista de Productos' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
 
           <Divider />
-          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
+          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} setType={setType} />
 
           {isLoading ? (
             <Box sx={{ display: 'flex', textAlign: 'center', alignItems: 'center', flexDirection: 'column' }}>
@@ -216,7 +226,8 @@ const Ventas = () => {
         </Card>
       </Grid>
 
-      <SidebarAdd open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <SidebarAdd open={addUserOpen} toggle={toggleAddUserDrawer} type={type}/>
+      <Sidebar open={open} toggle={toggle} type={type}/>
     </Grid>
   )
 }

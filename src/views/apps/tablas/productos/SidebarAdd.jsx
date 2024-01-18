@@ -74,7 +74,7 @@ const defaultValues = {
 
 const SidebarAdd = props => {
   // ** Props
-  const { open, toggle } = props
+  const { open, toggle ,type} = props
 
   const [categoria, setCategoria] = useState('Categoria')
 
@@ -109,8 +109,9 @@ const SidebarAdd = props => {
   })
 
   const upLoadImage = async file => {
-    console.log(file[0])
-    const { error } = await supabase.storage.from('images').upload(`${file[0].path}`, file[0])
+    const img = file[0]
+
+    const { error } = await supabase.storage.from('images').upload(new Date().getTime()+`.jpg`, img)
 
     if (error) {
       console.log('Error Upload Image', error)
@@ -130,12 +131,14 @@ const SidebarAdd = props => {
     upLoadImage(files)
     toggle()
     reset()
+    setFiles([])
   }
 
   const handleClose = () => {
     setCategoria('Categoria')
     toggle()
     reset()
+    setFiles([])
   }
 
   return (
@@ -148,7 +151,7 @@ const SidebarAdd = props => {
       sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
     >
       <Header>
-        <Typography variant='h6'>Agregar Producto</Typography>
+        <Typography variant='h6'>{type=='add'?'Agregar':'Editar'} Producto</Typography>
         <IconButton size='small' onClick={handleClose} sx={{ color: 'text.primary' }}>
           <Icon icon='mdi:close' fontSize={20} />
         </IconButton>
